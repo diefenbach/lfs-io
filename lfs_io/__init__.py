@@ -546,4 +546,3 @@ def my_import(request):
         new_product.save()
 
     return HttpResponse("Finished!")
-register(export, "io")
