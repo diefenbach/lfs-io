@@ -213,7 +213,6 @@ def export(request, export):
                 "active_packing_unit": product.active_packing_unit,
                 "packing_unit": product.packing_unit,
                 "packing_unit_unit": product.packing_unit_unit,
-                "static_block": product.static_block,
                 "weight": product.weight,
                 "height": product.height,
                 "length": product.length,
