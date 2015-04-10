@@ -3,6 +3,7 @@ import json
 import zipfile
 
 # django imports
+from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -34,6 +35,7 @@ import logging
 logger = logging.getLogger("default")
 
 
+@permission_required("core.manage_shop")
 def import_view(request, template_name="lfs_io/import.html"):
     form = ImportForm()
     if request.method == "POST":
@@ -73,7 +75,7 @@ def _import(request):
         new_product.active = product["active"]
         new_product.deliverable = product["deliverable"]
         new_product.manual_delivery_time = product["manual_delivery_time"]
-#        new_product.delivery_time = product["delivery_time"]
+        # new_product.delivery_time = product["delivery_time"]
         new_product.order_time = product["order_time"]
         new_product.manage_stock_amount = product["manage_stock_amount"]
         new_product.stock_amount = product["stock_amount"]
@@ -329,7 +331,7 @@ def _import(request):
                 )
             else:
                 # Save the values for every group of the property. In 0.8 there
-                # was only one value for an property
+                # was only one value for a property for all groups
                 for group in prop.groups.all():
                     ProductPropertyValue.objects.create(
                         product=new_product,
