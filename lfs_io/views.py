@@ -106,7 +106,7 @@ def _import(request):
         new_product.active_dimensions = product["active_dimensions"]
         new_product.active_price_calculation = product["active_price_calculation"]
         new_product.active_base_price = product["active_base_price"]
-        new_product.base_price_unit = product["base_price_unit"]
+        new_product.base_price_unit = product["base_price_unit"] or ""
         new_product.base_price_amount = product["base_price_amount"]
         new_product.sku_manufacturer = product["sku_manufacturer"]
         new_product.type_of_quantity_field = product["type_of_quantity_field"]
@@ -200,16 +200,16 @@ def _import(request):
                 new_prop.local = prop["local"]
                 new_prop.variants = prop["variants"]
                 new_prop.filterable = prop["filterable"]
-                new_prop.configurable = prop["configurable"]
+                new_prop.configurable = prop["configurable"] or False
                 new_prop.type = prop["type"]
                 new_prop.price = prop["price"]
-                new_prop.display_price = prop["display_price"]
-                new_prop.add_price = prop["add_price"]
+                new_prop.display_price = prop["display_price"] or False
+                new_prop.add_price = prop["add_price"] or False
                 new_prop.unit_min = prop["unit_min"]
                 new_prop.unit_max = prop["unit_max"]
                 new_prop.unit_step = prop["unit_step"]
-                new_prop.decimal_places = prop["decimal_places"]
-                new_prop.required = prop["required"]
+                new_prop.decimal_places = prop["decimal_places"] or 0
+                new_prop.required = prop["required"] or False
                 new_prop.step_type = prop["step_type"]
                 new_prop.step = prop["step"]
                 new_prop.save()
