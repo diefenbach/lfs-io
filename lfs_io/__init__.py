@@ -117,6 +117,13 @@ def export(request, export):
                         steps.append({
                             "start": step.start,
                         })
+
+                    # LFS < 0.8 has no property.variants attribute
+                    try:
+                        variants = gpr.property.variants
+                    except AttributeError:
+                        variants = True
+
                     properties.append({
                         "uid": gpr.property.uid,
                         "name": gpr.property.name,
@@ -127,7 +134,7 @@ def export(request, export):
                         "local": gpr.property.local,
                         "unit": gpr.property.unit,
                         "display_on_product": gpr.property.display_on_product,
-                        "variants": gpr.property.variants,
+                        "variants": variants,
                         "filterable": gpr.property.filterable,
                         "configurable": gpr.property.configurable,
                         "type": gpr.property.type,
