@@ -1,6 +1,5 @@
 # Python imports
 import json
-import uuid
 import zipfile
 
 # django imports
@@ -276,7 +275,7 @@ def _import(request):
                 )
 
         # Related products
-        new_product.related_products.all().delete()
+        new_product.related_products.remove()
         for related_product_uid in product["related_products"]:
             try:
                 related_product = Product.objects.get(uid=related_product_uid)
