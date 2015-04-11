@@ -4,6 +4,8 @@ import zipfile
 import StringIO
 
 # django imports
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 from django.http import HttpResponse
 
 # lfs imports
@@ -265,3 +267,8 @@ def export(request, export):
     return response
 
 register(export, "io")
+
+
+@receiver(pre_delete, sender=Product)
+def log_deleted_product(sender, instance, using, **kwargs):
+    logger.info("Product deleted {}".format(instance.uid))
