@@ -1,5 +1,6 @@
 # Python imports
 import json
+import uuid
 import zipfile
 
 # django imports
@@ -7,6 +8,7 @@ from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.template.defaultfilters import slugify
 
 # lfs imports
 from lfs.catalog.models import FilterStep
@@ -81,7 +83,7 @@ def _import(request):
         new_product.stock_amount = product["stock_amount"]
         new_product.active_packing_unit = product["active_packing_unit"]
         new_product.packing_unit = product["packing_unit"]
-        new_product.packing_unit_unit = product["packing_unit_unit"]
+        new_product.packing_unit_unit = product["packing_unit_unit"] or ""
         new_product.price_calculation = product["price_calculation"]
         new_product.weight = product["weight"]
         new_product.height = product["height"]
@@ -116,7 +118,10 @@ def _import(request):
             new_product.ordered_at = product["ordered_at"]
 
         # Manufacturer
-        manufacturer, created = Manufacturer.objects.get_or_create(name=product["manufacturer"])
+        manufacturer, created = Manufacturer.objects.get_or_create(
+            name=product["manufacturer"],
+            slug=slugify(product["manufacturer"]),
+        )
         new_product.manufacturer = manufacturer
 
         # Tax
@@ -127,6 +132,10 @@ def _import(request):
             pass
 
         new_product.save()
+        if created:
+            logger.info("Product created {}".format(product["uid"]))
+        else:
+            logger.info("Product updated {}".format(product["uid"]))
 
         # Images
         new_product.images.all().delete()
@@ -167,7 +176,7 @@ def _import(request):
             new_prop = Property.objects.create(
                 uid=prop["uid"],
                 name=prop["name"],
-                type=prop["type"],
+                type=prop.get("type", 0),
                 local=True,
             )
             for option in prop["options"]:
@@ -226,8 +235,8 @@ def _import(request):
                 for option in prop["options"]:
                     po, created = PropertyOption.objects.get_or_create(
                         uid=option["uid"],
-                        property=new_prop
                     )
+                    po.property = new_prop
                     po.name = option["name"]
                     po.price = option["price"]
                     po.position = option["position"]
