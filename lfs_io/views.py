@@ -233,9 +233,13 @@ def _import(request):
 
                 # Options
                 for option in prop["options"]:
-                    po, created = PropertyOption.objects.get_or_create(
-                        uid=option["uid"],
-                    )
+                    try:
+                        po = PropertyOption.objects.get(uid=option["uid"])
+                    except PropertyOption.DoesNotExist:
+                        po = PropertyOption.objects.create(
+                            uid=option["uid"],
+                            property=new_prop,
+                        )
                     po.property = new_prop
                     po.name = option["name"]
                     po.price = option["price"]
