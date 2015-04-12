@@ -1,5 +1,6 @@
 # Python imports
 import json
+import re
 import zipfile
 
 # django imports
@@ -83,7 +84,6 @@ def _import(request):
         new_product.active_packing_unit = product["active_packing_unit"]
         new_product.packing_unit = product["packing_unit"]
         new_product.packing_unit_unit = product["packing_unit_unit"] or ""
-        new_product.price_calculation = product["price_calculation"]
         new_product.weight = product["weight"]
         new_product.height = product["height"]
         new_product.length = product["length"]
@@ -354,5 +354,16 @@ def _import(request):
                         property_group=group,
                     )
 
+        # price calculation
+        def replace_uid(match):
+            try:
+                prop = Property.objects.get(uid=match.groups()[0])
+            except Property.DoesNotExist:
+                return "property({})".format(match.groups()[0])
+            else:
+                return "property({})".format(prop.id)
+        price_calculation = re.sub(r"property\(([\w-]+)\)", replace_uid, product["price_calculation"])
+
+        new_product.price_calculation = price_calculation
         new_product.sub_type = product["sub_type"]
         new_product.save()

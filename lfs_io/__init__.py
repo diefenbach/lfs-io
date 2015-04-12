@@ -1,7 +1,8 @@
 # Python imports
 import json
-import zipfile
+import re
 import StringIO
+import zipfile
 
 # django imports
 from django.db.models.signals import pre_delete
@@ -14,6 +15,7 @@ from lfs.catalog.models import Product
 from lfs.catalog.models import ProductAccessories
 from lfs.catalog.models import ProductsPropertiesRelation
 from lfs.catalog.models import ProductPropertyValue
+from lfs.catalog.models import Property
 from lfs.catalog.models import PropertyOption
 from lfs.catalog.settings import PROPERTY_SELECT_FIELD
 from lfs.export.utils import register
@@ -71,6 +73,16 @@ def export(request, export):
             manufacturer = product.manufacturer.name if product.manufacturer else ""
             default_variant = product.default_variant.uid if product.default_variant else ""
             ordered_at = str(product.ordered_at) if product.ordered_at else ""
+
+            # price calculation
+            def replace_id(match):
+                try:
+                    prop = Property.objects.get(pk=match.groups()[0])
+                except Property.DoesNotExist:
+                    return "property({})".format(match.groups()[0])
+                else:
+                    return "property({})".format(prop.uid)
+            price_calculation = re.sub(r"property\((\d+)\)", replace_id, product.price_calculation)
 
             # Category variant
             if product.category_variant and (product.category_variant < 0):
@@ -244,7 +256,7 @@ def export(request, export):
                 "template": product.template,
                 "price_calculator": price_calculator,
                 "active_price_calculation": product.active_price_calculation,
-                "price_calculation": product.price_calculation,
+                "price_calculation": price_calculation,
                 "active_base_price": product.active_base_price,
                 "base_price_unit": product.base_price_unit,
                 "base_price_amount": product.base_price_amount,
@@ -260,7 +272,7 @@ def export(request, export):
                 "property_values": property_values,
                 "property_groups": property_groups,
             })
-            zf.writestr("data.json", json.dumps(result))
+        zf.writestr("data.json", json.dumps(result))
 
     response = HttpResponse(buffer.getvalue(), content_type="application/zip")
     response["Content-Disposition"] = "attachment; filename=%s.zip" % export.name
