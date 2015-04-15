@@ -59,7 +59,7 @@ def _import(request):
         # new_product.price_calculator = product["price_calculation"]
         # new_product.template = product[""]
         # new_product.supplier = product["supplier"]
-        new_product, created = Product.objects.get_or_create(uid=product["uid"])
+        new_product, product_created = Product.objects.get_or_create(uid=product["uid"])
         new_product.name = product["name"]
         new_product.sku = product["sku"]
         new_product.slug = product["slug"]
@@ -131,7 +131,7 @@ def _import(request):
             pass
 
         new_product.save()
-        if created:
+        if product_created:
             logger.info("Product created {}".format(product["uid"]))
         else:
             logger.info("Product updated {}".format(product["uid"]))
@@ -308,6 +308,10 @@ def _import(request):
         except Product.DoesNotExist:
             new_product.category_variant = product["category_variant"]
 
+        # sub_type needs to be set before the property values are saved.
+        # parent_id of PPV is set based on the sub type. See PPV.save()-method
+        new_product.sub_type = product["sub_type"]
+
         # Property values
         ProductPropertyValue.objects.filter(product=new_product).delete()
         for property_value in product["property_values"]:
@@ -323,7 +327,7 @@ def _import(request):
                 logger.info("Property for property value not found: {} {}".format(new_product.uid, property_value["property"]))
                 continue
 
-            if prop.local or (property_value["type"] == PROPERTY_SELECT_FIELD):
+            if prop.local or (prop.type == PROPERTY_SELECT_FIELD):
                 try:
                     value = PropertyOption.objects.get(uid=property_value["value"]).pk
                 except PropertyOption.DoesNotExist:
@@ -335,7 +339,6 @@ def _import(request):
             if prop.local:
                 ProductPropertyValue.objects.create(
                     product=new_product,
-                    parent_id=parent.id,
                     property=prop,
                     value=value,
                     type=property_value["type"],
@@ -347,7 +350,6 @@ def _import(request):
                 for group in prop.groups.all():
                     ProductPropertyValue.objects.create(
                         product=new_product,
-                        parent_id=parent.id,
                         property=prop,
                         value=value,
                         type=property_value["type"],
@@ -365,5 +367,4 @@ def _import(request):
         price_calculation = re.sub(r"property\(([\w-]+)\)", replace_uid, product["price_calculation"])
 
         new_product.price_calculation = price_calculation
-        new_product.sub_type = product["sub_type"]
         new_product.save()
