@@ -12,6 +12,7 @@ from django.template.defaultfilters import slugify
 
 # lfs imports
 from lfs.catalog.models import FilterStep
+from lfs.catalog.models import DeliveryTime
 from lfs.catalog.models import GroupsPropertiesRelation
 from lfs.catalog.models import Image
 from lfs.catalog.models import Product
@@ -130,7 +131,20 @@ def _import(request):
         except ValueError:
             pass
 
+        # Delivery time
+        if product["delivery_time"]:
+            delivery_time, created = DeliveryTime.objects.get_or_create(
+                min=product["delivery_time"]["min"],
+                max=product["delivery_time"]["max"],
+                unit=product["delivery_time"]["unit"],
+            )
+            delivery_time.description = product["delivery_time"]["description"]
+            delivery_time.save()
+
+            new_product.delivery_time = delivery_time
+
         new_product.save()
+
         if product_created:
             logger.info("Product created {}".format(product["uid"]))
         else:

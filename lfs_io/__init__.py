@@ -198,6 +198,17 @@ def export(request, export):
                     "type": ppv.type,
                 })
 
+            # Delivery time
+            if product.delivery_time:
+                delivery_time = {
+                    "min": product.delivery_time.min,
+                    "max": product.delivery_time.max,
+                    "unit": product.delivery_time.unit,
+                    "description": product.delivery_time.description,
+                }
+            else:
+                delivery_time = None
+
             result.append({
                 "uid": product.uid,
                 "name": product.name,
@@ -219,7 +230,7 @@ def export(request, export):
                 "supplier": product.supplier,
                 "deliverable": product.deliverable,
                 "manual_delivery_time": product.manual_delivery_time,
-                # "delivery_time": product.delivery_time,
+                "delivery_time": delivery_time,
                 "order_time": product.order_time,
                 "ordered_at": ordered_at,
                 "manage_stock_amount": product.manage_stock_amount,
