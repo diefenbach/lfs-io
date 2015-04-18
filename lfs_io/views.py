@@ -132,7 +132,7 @@ def _import(request):
             pass
 
         # Delivery time
-        if product["delivery_time"]:
+        if product.get("delivery_time"):
             delivery_time, created = DeliveryTime.objects.get_or_create(
                 min=product["delivery_time"]["min"],
                 max=product["delivery_time"]["max"],
