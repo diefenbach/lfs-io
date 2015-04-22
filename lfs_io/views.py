@@ -186,6 +186,10 @@ def _import(request):
             ppr.delete()
 
         for prop in product["local_properties"]:
+            try:
+                Property.objects.get(uid=prop["uid"]).delete()
+            except Property.DoesNotExist:
+                pass
             new_prop = Property.objects.create(
                 uid=prop["uid"],
                 name=prop["name"],
@@ -194,6 +198,10 @@ def _import(request):
                 local=True,
             )
             for option in prop["options"]:
+                try:
+                    PropertyOption.objects.get(uid=prop["uid"]).delete()
+                except PropertyOption.DoesNotExist:
+                    pass
                 PropertyOption.objects.create(
                     property=new_prop,
                     uid=option["uid"],
