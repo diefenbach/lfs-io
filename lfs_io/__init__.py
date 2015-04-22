@@ -108,6 +108,8 @@ def export(request, export):
                 local_properties.append({
                     "uid": ppr.property.uid,
                     "name": ppr.property.name,
+                    "title": ppr.property.title,
+                    "type": ppr.property.type,
                     "position": ppr.position,
                     "local": ppr.property.local,
                     "options": options,

@@ -189,7 +189,8 @@ def _import(request):
             new_prop = Property.objects.create(
                 uid=prop["uid"],
                 name=prop["name"],
-                type=prop.get("type", 0),
+                title=prop["title"],
+                type=prop["type"],
                 local=True,
             )
             for option in prop["options"]:
