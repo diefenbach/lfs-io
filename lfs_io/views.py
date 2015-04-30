@@ -327,7 +327,7 @@ def _import(request):
 
         # Category variant
         try:
-            new_product.category_variant = Product.objects.get(uid=product["category_variant"])
+            new_product.category_variant = Product.objects.get(uid=product["category_variant"]).id
         except Product.DoesNotExist:
             new_product.category_variant = product["category_variant"]
 
