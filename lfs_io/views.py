@@ -35,7 +35,7 @@ from django.core.files.base import ContentFile
 
 # Load logger
 import logging
-logger = logging.getLogger("default")
+logger = logging.getLogger(__name__)
 
 
 @permission_required("core.manage_shop")

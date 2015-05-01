@@ -23,7 +23,7 @@ from lfs.export.utils import register
 
 # Load logger
 import logging
-logger = logging.getLogger("default")
+logger = logging.getLogger(__name__)
 
 
 def export(request, export):
