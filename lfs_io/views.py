@@ -5,6 +5,7 @@ import zipfile
 
 # django imports
 from django.contrib.auth.decorators import permission_required
+from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -38,6 +39,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+@transaction.atomic
 @permission_required("core.manage_shop")
 def import_view(request, template_name="lfs_io/import.html"):
     form = ImportForm()
