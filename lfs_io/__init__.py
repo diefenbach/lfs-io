@@ -265,7 +265,7 @@ def export(request, export):
                 "active_meta_title": product.active_meta_title,
                 "active_meta_description": product.active_meta_description,
                 "active_meta_keywords": product.active_meta_keywords,
-                "active_dimensions": product.active_meta_keywords,
+                "active_dimensions": product.active_dimensions,
                 "template": product.template,
                 "price_calculator": price_calculator,
                 "active_price_calculation": product.active_price_calculation,
