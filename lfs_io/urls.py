@@ -1,6 +1,7 @@
-# django imports
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
-urlpatterns = patterns('lfs_io.views',
-    url(r'^import$', "import_view", name='import'),
-)
+from . import views
+
+urlpatterns = [
+    url(r'^import$', views.import_view, name='import'),
+]
