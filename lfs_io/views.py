@@ -36,6 +36,7 @@ from django.core.files.base import ContentFile
 
 # Load logger
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -47,9 +48,15 @@ def import_view(request, template_name="lfs_io/import.html"):
         _import(request)
         return HttpResponse("Finished!")
     else:
-        return render_to_response(template_name, RequestContext(request, {
-            "form": form,
-        }))
+        return render_to_response(
+            template_name,
+            RequestContext(
+                request,
+                {
+                    "form": form,
+                },
+            ),
+        )
 
 
 def _import(request):
@@ -160,10 +167,7 @@ def _import(request):
                 position=image["position"],
                 content=new_product,
             )
-            new_image.image.save(
-                image["name"],
-                ContentFile(zf.open(image["path"]).read())
-            )
+            new_image.image.save(image["name"], ContentFile(zf.open(image["path"]).read()))
             new_image.save()
 
         # Attachments
@@ -175,10 +179,7 @@ def _import(request):
                 position=attachment["position"],
                 product=new_product,
             )
-            new_attachment.file.save(
-                attachment["name"],
-                ContentFile(zf.open(attachment["path"]).read())
-            )
+            new_attachment.file.save(attachment["name"], ContentFile(zf.open(attachment["path"]).read()))
             new_attachment.save()
 
         # Local properties
@@ -211,10 +212,7 @@ def _import(request):
                     price=option["price"],
                     position=option["position"],
                 )
-            ProductsPropertiesRelation.objects.create(
-                product=new_product,
-                property=new_prop,
-                position=prop["position"])
+            ProductsPropertiesRelation.objects.create(product=new_product, property=new_prop, position=prop["position"])
 
         # Property groups and global properties
         for property_group in product["property_groups"]:
@@ -296,7 +294,7 @@ def _import(request):
                     product=new_product,
                     accessory=new_accessory,
                     position=accessory["position"],
-                    quantity=accessory["quantity"]
+                    quantity=accessory["quantity"],
                 )
 
         # Related products
@@ -343,20 +341,28 @@ def _import(request):
             try:
                 parent = Product.objects.get(uid=property_value["parent"])
             except Product.DoesNotExist:
-                logger.info("Parent for property value not found: {} {}".format(new_product.uid, property_value["parent"]))
+                logger.info(
+                    "Parent for property value not found: {} {}".format(new_product.uid, property_value["parent"])
+                )
                 continue
 
             try:
                 prop = Property.objects.get(uid=property_value["property"])
             except Property.DoesNotExist:
-                logger.info("Property for property value not found: {} {}".format(new_product.uid, property_value["property"]))
+                logger.info(
+                    "Property for property value not found: {} {}".format(new_product.uid, property_value["property"])
+                )
                 continue
 
             if prop.local or (prop.type == PROPERTY_SELECT_FIELD):
                 try:
                     value = PropertyOption.objects.get(uid=property_value["value"]).pk
                 except PropertyOption.DoesNotExist:
-                    logger.info("PropertyOption for property value not found: {} {}".format(new_product.uid, property_value["value"]))
+                    logger.info(
+                        "PropertyOption for property value not found: {} {}".format(
+                            new_product.uid, property_value["value"]
+                        )
+                    )
                     continue
             else:
                 value = property_value["value"]
@@ -389,6 +395,7 @@ def _import(request):
                 return "property({})".format(match.groups()[0])
             else:
                 return "property({})".format(prop.id)
+
         price_calculation = re.sub(r"property\(([\w-]+)\)", replace_uid, product["price_calculation"])
 
         new_product.price_calculation = price_calculation
