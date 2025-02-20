@@ -1,8 +1,8 @@
 # Python imports
 import json
 import re
-import StringIO
 import zipfile
+from io import StringIO
 
 # django imports
 from django.http import HttpResponse

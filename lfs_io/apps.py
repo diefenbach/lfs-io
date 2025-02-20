@@ -2,8 +2,8 @@ from django.apps import AppConfig
 
 
 class LfsIoAppConfig(AppConfig):
-    name = "lfs.io"
+    name = "lfs_io"
 
     def ready(self):
-        import export
-        import listeners
+        from . import export
+        from . import listeners
