@@ -37,7 +37,7 @@ from django.core.files.base import ContentFile
 # Load logger
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("lfs")
 
 
 @transaction.atomic

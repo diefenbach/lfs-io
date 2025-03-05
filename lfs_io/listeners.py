@@ -5,7 +5,7 @@ from django.dispatch import receiver
 
 from lfs.catalog.models import Product
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("lfs")
 
 
 @receiver(pre_delete, sender=Product)
